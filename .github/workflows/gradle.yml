@@ -26,23 +26,23 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-    docker:
-      needs: build
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-        # Se connecter à Docker Hub
-        - name: Log in to Docker Hub
-          uses: docker/login-action@v2
-          with:
-            username: ${{ secrets.DOCKER_HUB_USERNAME }}
-            password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      # Se connecter à Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-        # Builder l'image Docker
-        - name: Build Docker image
-          run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/java-app:latest .
+      # Builder l'image Docker
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/java-app:latest .
 
-        # Pousser l'image sur Docker Hub
-        - name: Push Docker image
-          run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/java-app:latest
+      # Pousser l'image sur Docker Hub
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/java-app:latest
