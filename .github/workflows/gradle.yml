@@ -35,6 +35,14 @@ jobs:
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
+    - name: Build with Gradle Wrapper
+      run: ./gradlew build
+
+    - name: Upload JAR artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: java-app-jar
+        path: build/libs/*.jar
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
@@ -59,6 +67,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: java-app-jar
+          path: ./build/libs
+
 
       # Builder l'image Docker
       - name: Build Docker image
