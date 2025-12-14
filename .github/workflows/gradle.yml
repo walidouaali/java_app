@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+
     steps:
       - uses: actions/checkout@v4
 
@@ -45,22 +46,27 @@ jobs:
   docker-deploy:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
-      # Set up GCP credentials
-      - name: Set up GCP
+      # Authentifier le runner GitHub sur GCP avec le compte de service
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      # Installer gcloud
+      - name: Set up gcloud CLI
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
 
-      # Authenticate Docker to Artifact Registry
+      # Configurer Docker pour Artifact Registry
       - name: Configure Docker for GCP
         run: gcloud auth configure-docker
 
-      # Download JAR artifact
+      # Télécharger le JAR buildé
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
         with:
@@ -73,13 +79,13 @@ jobs:
           IMAGE_URI="europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/java-repo/java-app:latest"
           docker build -t $IMAGE_URI .
 
-      # Push Docker image to Artifact Registry
+      # Push Docker image dans Artifact Registry
       - name: Push Docker image
         run: |
           IMAGE_URI="europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/java-repo/java-app:latest"
           docker push $IMAGE_URI
 
-      # Deploy to Cloud Run
+      # Déployer sur Cloud Run
       - name: Deploy to Cloud Run
         run: |
           IMAGE_URI="europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/java-repo/java-app:latest"
@@ -93,6 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - uses: actions/checkout@v4
 
