@@ -8,6 +8,6 @@ public class HelloController {
 
     @GetMapping("/")
     public String index() {
-        return "Le projet est fonctionnel ! Bienvenue sur l'endpoint de test.";
+        return "Le projet est fonctionnel! Bienvenue sur l'endpoint de test.";
     }
 }
